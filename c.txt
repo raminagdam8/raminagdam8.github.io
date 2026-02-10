@@ -1,0 +1,113 @@
+# ===============================================
+# ÇEVRE İZLEME SENSÖRLERİ
+# ===============================================
+
+# ---------- 1. SENSORS.TXT DOSYASINI OKU ----------
+
+# Sensör bilgilerini tutacak listeler
+sensorler = []
+
+dosya = open("sensors.txt", "r")
+satirlar = dosya.readlines()
+dosya.close()
+
+for satir in satirlar:
+    parcalar = satir.strip().split()
+    sensor_id = parcalar[0]    # Sensör kodu
+    lokasyon = parcalar[1]     # Konum
+    tip = parcalar[2]          # Sensör tipi
+    sensorler.append([sensor_id, lokasyon, tip])
+
+# ---------- 2. HER SENSÖR İÇİN VERİLERİ OKU ----------
+
+# Sonuçları tutacak sözlükler
+ortalamalar = {}      # Her sensörün ortalaması
+maksimumlar = {}      # Her sensörün maksimum değeri
+tip_toplam = {}       # Her tip için toplam değer
+tip_sayac = {}        # Her tip için sensör sayısı
+
+for sensor in sensorler:
+    sensor_id = sensor[0]
+    lokasyon = sensor[1]
+    tip = sensor[2]
+    
+    # CSV dosyasını okumayı dene
+    try:
+        dosya = open(sensor_id + ".csv", "r")
+        satirlar = dosya.readlines()
+        dosya.close()
+        
+        # Değerleri topla
+        toplam = 0
+        sayac = 0
+        maksimum = 0
+        
+        # İlk satır başlık, atla
+        for satir in satirlar[1:]:
+            parcalar = satir.strip().split(",")
+            deger = float(parcalar[2])
+            toplam = toplam + deger
+            sayac = sayac + 1
+            if deger > maksimum:
+                maksimum = deger
+        
+        # Ortalama hesapla
+        ortalama = toplam / sayac
+        
+        # Sonuçları kaydet
+        ortalamalar[sensor_id] = ortalama
+        maksimumlar[sensor_id] = maksimum
+        
+        # Tip bazlı toplama ekle
+        if tip not in tip_toplam:
+            tip_toplam[tip] = 0
+            tip_sayac[tip] = 0
+        tip_toplam[tip] = tip_toplam[tip] + ortalama
+        tip_sayac[tip] = tip_sayac[tip] + 1
+        
+    except:
+        # Dosya bulunamadı
+        print("File not found for sensor: " + sensor_id)
+
+# ---------- 3. SENSÖR BİLGİLERİNİ YAZDIR ----------
+
+for sensor in sensorler:
+    sensor_id = sensor[0]
+    lokasyon = sensor[1]
+    tip = sensor[2]
+    
+    # Sadece verisi olan sensörleri yazdır
+    if sensor_id in ortalamalar:
+        ort = ortalamalar[sensor_id]
+        print(sensor_id + ": " + lokasyon + " - " + tip + " - Average: " + str(round(ort, 2)))
+
+# ---------- 4. EN YÜKSEK OKUMAYI BUL ----------
+
+en_yuksek_id = ""
+en_yuksek_deger = 0
+
+for sensor_id in maksimumlar:
+    if maksimumlar[sensor_id] > en_yuksek_deger:
+        en_yuksek_deger = maksimumlar[sensor_id]
+        en_yuksek_id = sensor_id
+
+# Bu sensörün bilgilerini bul
+for sensor in sensorler:
+    if sensor[0] == en_yuksek_id:
+        lokasyon = sensor[1]
+        tip = sensor[2]
+
+print("Sensor with highest recorded reading: " + en_yuksek_id + " at " + lokasyon + " - " + tip + " - Maximum value: " + str(en_yuksek_deger))
+
+# ---------- 5. EN YÜKSEK ORTALAMALI TİPİ BUL ----------
+
+en_iyi_tip = ""
+en_iyi_ort = 0
+
+for tip in tip_toplam:
+    tip_ort = tip_toplam[tip] / tip_sayac[tip]
+    if tip_ort > en_iyi_ort:
+        en_iyi_ort = tip_ort
+        en_iyi_tip = tip
+
+print("Sensor type with the highest average: " + en_iyi_tip + " - Average: " + str(round(en_iyi_ort, 1)))
