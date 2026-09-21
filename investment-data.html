@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Our Investment Data — p01</title>
+<meta name="description" content="Our Investment Network">
+<meta name="theme-color" content="#14222B">
+<link rel="icon" id="favicon" href="data:,">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #14222B;
+    --bg-deep: #0f1a21;
+    --fg: #c9d3d9;              /* soft off-white, pulled toward the background */
+    --fg-2: #8fa0ab;
+    --fg-3: #63788a;
+    --line: rgba(201, 211, 217, 0.09);
+    --line-2: rgba(201, 211, 217, 0.2);
+    --hover: rgba(201, 211, 217, 0.045);
+    --green: #00ff41;
+    --glow: 0, 255, 65;
+    --pad: clamp(20px, 4vw, 48px);
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { color-scheme: dark; scrollbar-color: #2c4050 var(--bg); scrollbar-width: thin; }
+  html:has(dialog[open]) { overflow: hidden; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 20px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection { background: rgba(var(--glow), 0.22); color: #fff; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 1px solid var(--green); outline-offset: 3px; }
+
+  .wrap { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 var(--pad); }
+
+  /* ───────── top ───────── */
+
+  .top { padding-top: clamp(22px, 3.4vw, 36px); }
+  .mark { display: inline-block; line-height: 0; }
+  #mark { display: grid; grid-template-columns: repeat(17, 4px); grid-auto-rows: 4px; gap: 1px; }
+  #mark i { background: var(--green); box-shadow: 0 0 5px rgba(var(--glow), 0.55); }
+
+  h1 {
+    margin: clamp(40px, 8vh, 84px) 0 0;
+    font-weight: 400;
+    font-size: clamp(28px, 4vw, 52px);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+  }
+  h1 .cur {
+    display: inline-block;
+    width: 0.42em;
+    height: 0.42em;
+    margin-left: 0.18em;
+    background: var(--green);
+    box-shadow: 0 0 10px rgba(var(--glow), 0.6);
+  }
+  .sub { margin: 16px 0 0; font-size: 14px; color: var(--fg-2); }
+
+  /* ───────── numbers, drawn in the logo's pixels ───────── */
+
+  .stats { display: flex; flex-wrap: wrap; gap: 28px 72px; margin-top: clamp(36px, 6vh, 60px); }
+  .num { line-height: 0; }
+  .num svg {
+    height: clamp(38px, 6vw, 68px);
+    width: auto;
+    display: block;
+    filter: drop-shadow(0 0 8px rgba(var(--glow), 0.4));
+  }
+  .num rect { fill: var(--green); animation: boot 0.8s ease-out var(--d) both; }
+  .stat .lbl { margin-top: 14px; color: var(--fg-3); }
+
+  @keyframes boot {
+    0%   { opacity: 0; }
+    18%  { opacity: 1; }
+    30%  { opacity: 0.1; }
+    46%  { opacity: 1; }
+    58%  { opacity: 0.35; }
+    72%  { opacity: 1; }
+    100% { opacity: 1; }
+  }
+
+  /* ───────── names ───────── */
+
+  .feat { margin-top: clamp(44px, 7vh, 72px); padding-top: 28px; border-top: 1px solid var(--line); }
+  .feat .lab { color: var(--fg-3); margin-bottom: 14px; }
+  .names { display: flex; flex-wrap: wrap; gap: 6px 30px; font-size: 14.5px; line-height: 26px; }
+  .names span { color: var(--fg); }
+  .names .rest { color: var(--fg-3); }
+
+  /* ───────── countries ───────── */
+
+  .countries { margin-top: clamp(44px, 7vh, 72px); }
+
+  .chead {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .chead .lab { color: var(--fg-3); }
+
+  .find { display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--line-2); padding-bottom: 5px; transition: border-color 0.2s ease; min-width: min(280px, 100%); }
+  .find:focus-within { border-color: var(--green); }
+  .find .prompt { color: var(--green); }
+  .find input {
+    flex: 1;
+    min-width: 0;
+    background: none;
+    border: 0;
+    outline: 0;
+    padding: 0;
+    color: var(--fg);
+    caret-color: var(--green);
+    font: 400 13px/20px var(--mono);
+  }
+  .find input::placeholder { color: var(--fg-3); }
+
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+  }
+  .tiles:not(.all) .tile.extra { display: none; }
+
+  .tile {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 22px;
+    min-height: 92px;
+    padding: 16px 16px 14px;
+    background: none;
+    border: 0;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .tile[hidden] { display: none; }
+  .tile:hover, .tile:focus-visible { background: var(--hover); }
+  .tile:focus-visible { outline-offset: -3px; }
+  .tile .cn { color: var(--fg); font-weight: 500; overflow-wrap: anywhere; }
+  .tile:hover .cn { color: #e6edf1; }
+  .tile .foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .tile .bar { display: flex; gap: 2px; }
+  .tile .bar i { width: 5px; height: 5px; background: var(--fg); opacity: 0.12; }
+  .tile .bar i.on { opacity: 0.8; }
+  .tile b { font-weight: 400; color: var(--fg-2); font-variant-numeric: tabular-nums; }
+  .tile:hover .bar i.on { background: var(--green); opacity: 1; }
+  .tile:hover b { color: var(--green); }
+
+  .toggle {
+    margin-top: 22px;
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--fg-2);
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: var(--line-2);
+    text-underline-offset: 5px;
+  }
+  .toggle:hover { color: var(--green); }
+  #none { padding: 28px 0; color: var(--fg-3); }
+
+  /* ───────── dialog ───────── */
+
+  dialog {
+    width: min(720px, calc(100vw - 32px));
+    max-height: min(84vh, 760px);
+    padding: 0;
+    color: var(--fg);
+    background: var(--bg-deep);
+    border: 1px solid var(--line-2);
+    border-top: 1px solid var(--green);
+    overflow: hidden;
+  }
+  dialog:focus { outline: 0; }
+  dialog::backdrop { background: rgba(7, 13, 17, 0.78); }
+  .dbox {
+    position: relative;
+    max-height: min(84vh, 760px);
+    overflow: auto;
+    padding: 30px clamp(20px, 4vw, 36px) 28px;
+    scrollbar-width: thin;
+  }
+  .x {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: 1px solid var(--line-2);
+    color: var(--fg-3);
+    padding: 3px 7px;
+    font-size: 11px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .x:hover { color: var(--fg); border-color: var(--fg-3); }
+  dialog h2 { margin: 0; padding-right: 60px; font-weight: 400; font-size: 26px; line-height: 1.15; letter-spacing: -0.02em; }
+  .dsub { margin: 8px 0 0; color: var(--fg-3); }
+  #dlg-list { list-style: none; margin: 26px 0 0; padding: 0; columns: 2 250px; column-gap: 36px; }
+  #dlg-list li { position: relative; padding: 6px 0 6px 16px; break-inside: avoid; }
+  #dlg-list li::before { content: ""; position: absolute; left: 0; top: 15px; width: 5px; height: 5px; background: var(--fg-3); }
+  .dmore { margin: 22px 0 0; padding-top: 18px; border-top: 1px solid var(--line); color: var(--fg-3); }
+  .dmore b { font-weight: 400; color: var(--green); }
+
+  /* ───────── footer ───────── */
+
+  footer {
+    margin-top: auto;
+    padding-top: 72px;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 28px);
+    color: var(--fg-3);
+    font-size: 11.5px;
+  }
+  footer .wrap { display: flex; justify-content: space-between; }
+
+  noscript { display: block; padding: 40px 0; color: var(--fg-2); }
+
+  @media (max-width: 620px) {
+    .tiles { grid-template-columns: repeat(2, 1fr); }
+    .tile { min-height: 84px; padding: 14px 14px 12px; }
+    #dlg-list { columns: 1; }
+    .find { width: 100%; }
+    .names { gap: 4px 22px; font-size: 13.5px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .num rect { animation: none; }
+  }
+</style>
+</head>
+
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="index.html" aria-label="p.01, home"><span id="mark"></span></a>
+  </div>
+</header>
+
+<main class="wrap">
+  <h1>Our Investment Network<span class="cur" aria-hidden="true"></span></h1>
+  <p class="sub">Investors we refer our founders to.</p>
+
+  <noscript>This page needs JavaScript.</noscript>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="num" id="n-total" role="img"></div>
+      <div class="lbl">investors</div>
+    </div>
+    <div class="stat">
+      <div class="num" id="n-countries" role="img"></div>
+      <div class="lbl">countries</div>
+    </div>
+  </div>
+
+  <section class="feat" aria-label="Featured investors">
+    <div class="lab">among them</div>
+    <div class="names" id="names"></div>
+  </section>
+
+  <section class="countries" aria-label="Investors by country">
+    <div class="chead">
+      <span class="lab">by country</span>
+      <label class="find">
+        <span class="prompt" aria-hidden="true">&gt;</span>
+        <input id="cq" type="text" placeholder="find a country" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Find a country">
+      </label>
+    </div>
+    <div class="tiles" id="tiles"></div>
+    <div id="none" hidden>no country matches.</div>
+    <button class="toggle" id="toggle" type="button"></button>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>San Francisco, California</span>
+    <span>2026</span>
+  </div>
+</footer>
+
+<dialog id="dlg" aria-labelledby="dlg-title" tabindex="-1">
+  <div class="dbox">
+    <button class="x" type="button" id="dlg-x" aria-label="Close">esc</button>
+    <h2 id="dlg-title"></h2>
+    <p class="dsub" id="dlg-sub"></p>
+    <ul id="dlg-list"></ul>
+    <p class="dmore" id="dlg-more"></p>
+  </div>
+</dialog>
+
+<script id="data" type="application/json">{"total":2545,"countryCount":199,"featured":[20,27,12,29,17,9,16,19,25,30,2,24,14,0,4,11,33,31,6,1,7,346,28,15,5,10,13,3,8,26,18,54],"names":["Salesforce Ventures","Spark Capital","EQT Ventures","Sapphire Ventures","M12 - Microsoft Venture Fund","Alven","Anthemis","Partech Partners","Pear VC","Speedinvest","Daphni","Samsung Next","Creandum","Uncork Capital","SOSV","Kima Ventures","Point Nine Capital","Antler","Brinc","Hoxton Ventures","500 Global","Griffin Gaming Partners","Drive Capital","Sofinnova Partners","Target Global","Octopus Ventures","Forward Partners","Atomico","Norrsken VC","Seedcamp","MMC Ventures","European Investment Fund","Quiet Capital","Bpifrance","France 2030 / SGPI","OpenVC Test Fund 2","Alumni Ventures","DN Capital","Republic Europe","Lakestar Advisors","Bloc Ventures","Elaia","BlackFin Tech","Inveready","Point72 Ventures","Eclipse","JVP Jerusalem Venture Partners","Investissement Québec","NVP Norwest Venture Partners","First Wellington Securities Inc.","Inovia Capital","Georgian","Link Capital","OpenView","Tenity","Cadence Growth Capital (CGC)","SE Ventures","Inkef","Vorsprung Climate","XAnge","Maxrich Ventures GmbH","United Ventures","White Star Capital","C2 Capital","Graduate Entrepreneur","PsyMed Ventures","Infravia Capital Partners","Neva SGR","Social Capital","FITEC","Indus Equity Partners","Cosmos Capital Management","Radian Capital","Vantra","Compass Ventures","ByFounders","Singular","Sixty Degree Capital","GMPVC German Media Pool","Smartfin","Goertek Electronics","AVP AXA Venture Partners","Klass Capital","Schumpeter Ventures","Evolution Equity Partners","Sandwater","IPO Club","World Fund","Maersk Growth","OneRagtime","Frontline Ventures","Forestay Capital","Mosaic Ventures","Ibex Investors","Greycroft","SignalFire","MeOhr Ventures","Team8","Iris Capital","e2vc","Hitachi Ventures","Scientifica Venture Capital","Digital+ Partners","AgriBoom Ventures","Ventech","Aper Ventures","Paua Ventures","Blueworld.Group","Verve Ventures","Iron Wolf Capital","Nordic Secondary Fund","WestBridge Capital","Nexus Venture Partners","Elevar Equity","Osage University Partners","SWC Global","Sinarmas Technology","Harriet Ventures","Seraphim Space","Avatar Growth Capital","American Family Ventures","IBM Ventures","Variant","TotalEnergies Ventures","Gaorong Ventures","Nikaia Ventures","OneVentures","Hivemind Capital","Prithvi Ventures","Protocol Labs","Square Peg","Future Planet Capital","Artesian","Olimp Capital Partners","ZWC Partners","Creadev","Delta Partners","Act Venture Capital","Allegion Ventures","Panakes Partners","Venture Guides","Alpha Intelligence Capital","Illumina Ventures","APEX Capital","Shilling VC","J&T Ventures","Redstone","Signals Venture Capital","Upliift","Richfox Capital Investment Management AG","First Bridge Ventures","Ilavska Vuillermoz Capital","Dedicated VC","Great Eagle Holdings","Endeit Capital","Beta Lab","Blast.Club","UVC Partners","Moneta VC","Balnord","Molten Ventures","Fuse Venture Partners","Revo Capital","Simpact Ventures","EIT RawMaterials","Supercharge Capital","Liquidity Capital","Shearwater Capital","Boka Capital","Hampton Capital","iSelect Fund","Airtree Ventures","SCV Second Century Ventures","VMG Partners","Hummingbird Ventures","Iluminar Ventures","Vine Ventures","Propel Venture Partners","Petri","Alpha Partners","Crossbeam Ventures","Arborview Capital","Sierra Ventures","The Net Street Capital","Evergy Ventures","Mucker Capital","Avila VC","NXTP Ventures","Omnes","Ergül&Ocali Ventures","Inference Partners","Blueberry Muffin","Credo Ventures","OpenOcean","Lightbird Ventures","ECBF European Circular Bioeconomy Fund","Inovo Venture Partners","Augmentum Fintech","Convivialité Ventures","Runa Capital","V-Sharp Venture Studio","LAUNCHub Ventures","Canaan","Ride Home Fund","Upheaval Investments","Meta3Ventures","Media Investments","Seedventure Limited","Bitrock Capital","Fidelity International Strategic Ventures","Nasdaq Ventures","CE Ventures","ADIV","Shorooq Partners","Inflection Point venture","d.ventures","GSV Ventures","Signal Peak Ventures","Palm Drive Capital","Strategic Industrial Capital Partners","Hirschvogel Ventures","Fil Rouge Capital","Quam Venture Capital","Majinx Capital","Whales Ventures","Kalyna Capital","DIP Capital","Vektor Partners","TIN Capital","Fulcrum","Five Elms Capital","OTB Ventures","Pact","RTP Global","Idekapital","Smedvig Capital","Snö Ventures","Spintop Ventures","A/O PropTech","Rubio Impact Ventures","Ponooc","Peak","Frumtak Ventures","Monks Hill Ventures","PT Saratoga Investama Sedaya Tbk","Saison Capital","Quest Ventures","Telkomsel VC","Vertex Ventures (Southeast Asia and India)","MassMutual Ventures","Miracleplus (Former Y-Combinator China)","Vision Platform","EMVC Emphasis Ventures","Perseverance Capital","TheVentureCity","Paris Ventures","Colle Capital Partners","Myelin VC","Mouro Capital","Ethos VC","Fen Ventures","IDC Ventures","Zentynel","FEMSA Ventures","Starlight Ventures","Banana Capital","NOVA - Saint Gobain","Graphene Ventures","Momenta","Travel Capitalist Ventures","idacapital VC","TechOne Ventures","Sunsino Venture Group","Reazon Capital","Red Pin Capital","AVV Ascend Vietnam Ventures","Yellowdog","Oyster Ventures","Moonfire Ventures","Pulsar VC","No Such Ventures","FLORA Ventures","South Central Ventures","Telos Impact","BTFV","YZR Capital","Angular Ventures","Matterwave Ventures","Coral Capital","Shizen Capital","Kinston Capital","Sony Innovation Fund","DigitalDx Ventures","Coretronic Corporation","Kajima Ventures","E²JDJ","Great Wave Ventures","Taram Capital","RPS Ventures","Redwood Ventures","Marathon Ventures","Chile Ventures","SaaSholic","Roble Ventures","GPO Fund","Seed X Liechtenstein","NewAlpha Asset Management","Oyster Bay Venture Capital","Adesso Ventures","G+D Ventures","Freigeist","Alpha Future Funds","Venpace","Identity Ventures","EIT InnoEnergy","Blue Wire Capital","Alstin Capital","Henkel Ventures","First Stage Labs","Mount VC","Newzone Ventures","Innsaei Capital","Planet A","Flint Capital","CommerzVentures","Framework Ventures","CreditEase Fintech Investment Fund","SoGal Ventures","Continental CVC","Telstra Ventures","Lego Ventures","GTS Ventures","Assured Asset Management Limited","Brand Capital","London Real Ventures","Enflux","Capgemini Ventures","XVC Tech","Skystar Capital","Trive VC","Buko Ventures","Atlas Ventures (Singapore)","Nodem Capital","Investible","Foundamental","Spiral Ventures","TLcom Capital","Addium Capital","Cathay AfricInvest Innovation","Susa Ventures","Hummingbird Capital Partners","Better Tomorrow Ventures","Jaza Rift Ventures","Orange Ventures","Valia Ventures","Fluent Ventures","JPIN Venture Cataysts","Up Partners","Transvaal VC","AHL Venture Partners","SOL Fund 001","R17 Ventures","Rapid Pioneers","LvlUp Ventures","Houghton Street Ventures","Bangchak Initiative and Innovation Center","Turbostart","Velocity Ventures","Lab Ventures","XNV","MTE MedTech Entrepreneurs","Prime Ventures","Climate-KIC","Folklore Ventures","Tidal Ventures","Touch Ventures","Ascentro Capital Partners","Covalent Ventures","Aera VC","Icehouse Ventures","Standards Australia Future Fund","Alberts Impact Ventures","DOB Equity","Dynamo Ventures","J Ventures","Seedstars Africa Ventures","Chanzo Capital","Infinitum Partners","Samsung Catalyst Fund","Translink Capital","Simsan Ventures","Storm Ventures","Jeeny","Outliers Venture Capital","Early Capital Group","Propeller Ventures","Phoenix Venture Partners Ltd.","VentureFriends","Up VC","Truleum Venture Partners Limited","Abraseed-1","Plus Ultra Capital Partners","Foundation Ventures","SQ Capital","Smok Ventures","Underline Ventures","Early Game Ventures","Elevator Ventures","UNIQA Ventures","Icos Capital Management","BlackSheep MadTech Fund","Connect Ventures","Flashpoint VC","Wellstreet","Honey Island Capital","ResilienceVC","Bridge Partners","DH Ventures (Delivery Hero Ventures)","Cisco Climate Commitment","Infinium Partners","Axeleo Capital","Hellens Rock Capital","Flyer One Ventures","Dutch Founders Fund","ScaleX Ventures","Day One Capital","Brighteye Ventures","PurposeTech","Sturgeon Capital","Tomahawk.VC","DOMiNO Ventures","Astana Technology Fund","Navivo Capital","Breed Reply","Acrobator Ventures","TA Ventures","Scientifica - Young Fund","Walter Ventures","Best Nights VC","Matrix Ventures","Bonsai Partners","Buoyant Ventures","Leap435","Arctern Ventures","Final Frontier (Space & Defence VC)","Full Turn Capital","Elev8 VC","CSGo Hub (Crypto Serumpun Go Hub)","Essence VC","Plug & Play Ventures","Arrowshare Ventures","Verso X","Soma Ventures","Verge Healthtech Fund","HubSpot Ventures","dlab","TrueScope Ventures","Skilltor Tech Venture Studio","Sente Foundry","bValue VC","Tilia Impact Ventures","Teknasyon","Shape VC","Azur Innovation Management","CFV Ventures","GoodSoil VC","Homegrown CPG","OTF","Roselake Ventures","Plus Venture Capital (+VC)","Palumni VC","Rally Cap Ventures","ODBA","Alpine Ventures","FirstCheck Africa","Plumule Advisory","VU Venture Partners","Equator Invest","Base Capital","Africa Growth LLC","Deosai Ventures","SCOR Ventures","Resolution Ventures","Wavemaker Partners","M Venture Partners","GoAhead Ventures","Garden District Ventures","Horseshoe Capital","Orbita Capital","Raison Asset Management","Davidovs Venture Capital","Semantic Ventures","FSB Capital","ZILHive Ventures","Beacon Capital (UK)","Conviction Investment Partners","Astorya","Trind Ventures","First Momentum Ventures","Tiburon","DART Ventures","7percent Ventures","Deutsche Telekom Hubraum Fund","Techne Infiniti Ventures","Expa","Gilgamesh Ventures","Impacta VC","Volpe Capital","Colaborativo","Galicia Ventures","MrPink VC","Fiddlehead Ventures","Cibersons Ventures","Arrebol Capital","Ganas Ventures","Yellow Rocks","Presto Ventures","Expedite Capital","SmartGateVC","Nesprit Ventures","2080 Ventures","OM DAO Ventures","Tushiconcept","Alarabi Venture Capital","Venture MENA","Palindrome Capital","212","CIG","Function Ventures","Dinare Ventures","Acasia Group","O2 Angels Network","Noetic Fund","Vanquish Equity","G2 Fintech Fund","Newlin","Atta Impact Capital","Carbono3 Ventures","Proeza Ventures","GRIDX","Carao Ventures","The Ganesha Lab","Cacao Capital VC","Platanus Ventures","AvantLab","RoundX","13o3","Select Venture Equity","GPI Global Partners Investments","Razor Capital","Innopact","Anchorless Bangladesh","Save the Children Global Ventures","Katha VC","Iterative","1982 Ventures","Turtle Venture Studio","I XCEL Ltd","Allegory Capital","Nubia Capital","[sīc] Ventures","YIT Capital","Super Capital VC","Aezist","Pygma","Living On The Edge","Techstars Payments","Scala","Kinetic Investments","SuperCharger Ventures","Ecosystem Integrity Fund","Co-Creation Hub","Ajim Capital","Katapult Seed","Kili Ventures","Nobo Ventures Inc.","Daba Finance","Afrimobility","U-investors","Expert Dojo","Relatively Fund","Aperitivo","First Check Ventures","Proximity Ventures","Praxis","Serengeti Business Angels Network","Improve Ventures","Ingenerate Labs","Doha Tech Angels","Unpopular Ventures","Critical Ventures","Sheesha Finance","3cubed VC","Collective Spark","Mempool Ventures","Right Side Capital Management","Mandi Ventures","Playfair Capital","Outlier Ventures","SBI Ven Capital Pte Ltd","ReGen Ventures","Forster Chase Ventures","Remote First Capital","GAIN | Guadalajara Angel Investor Network","SC Angeles","Founders Venture Capital","gener8tor","Big Sky Capital","Caucasus Ventures","Lotfizadeh Technology Center Innovation","Fintech Start","Startup Wise Guys","CivilizationX","Graft Ventures","Escalar","Dialektos Investments","wCap Limited","InDrive New Venture","Enovation Factory","Next12","Exponential Impact","Systema VC","SHRMLabs","Valu.vc","yard[hub]","OpenVC Accelerator","Blockchain Founders Fund","Masawa","MARC Group","Unrest","YAP Capital","Biss Capital","Crypto Kingdom Ventures","Prepare 4 VC","Gambia Angel Investors Network (GAIN)","Cocoon Capital","Aadhyanta Fund","Join Capital","Orion Bridge Capital","sandstorm.vc","1 4 All Group","Collider Ventures","Arcanum Ventures","Bahman Capital","Bitdefender Voyager Ventures","ZAKA VC","Infinite Five Srl","Illera Ventures"],"countries":[["USA",1532,[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]],["UK",1038,[24,0,1,2,3,25,4,6,7,26,8,27,28,9,10,12,15,16,17,29,30,18,19,20]],["Germany",811,[24,0,1,2,3,4,5,6,7,8,27,28,31,9,10,12,15,16,17,29,18,20,23,32]],["France",766,[24,0,33,1,2,3,4,5,6,7,8,27,31,9,10,12,15,16,29,20,23,34,32,35]],["Spain",557,[24,0,1,2,5,7,8,27,28,31,10,12,16,29,18,20,36,37,38,39,40,41,42,43]],["Canada",546,[0,1,3,4,6,8,13,16,18,20,22,23,44,45,46,47,32,48,49,50,36,51,52,53]],["Switzerland",511,[24,0,2,8,27,9,10,12,16,29,18,54,20,23,55,56,57,38,39,58,59,60,43,61]],["Sweden",505,[1,2,4,5,7,27,28,31,9,10,12,16,17,29,20,52,37,38,39,40,42,43,62,63]],["Netherlands",472,[24,0,2,3,5,7,27,9,12,16,17,29,20,23,52,37,57,38,40,64,65,43,66,67]],["Italy",464,[2,5,7,8,27,31,9,10,12,16,29,18,20,23,37,68,69,38,39,70,71,43,61,67]],["Denmark",440,[1,2,5,7,27,28,9,12,16,17,29,20,52,37,57,38,39,42,43,72,73,74,75,76]],["Belgium",429,[2,5,7,27,9,10,12,16,29,20,37,57,39,40,41,59,42,43,77,72,78,76,79,80]],["Finland",426,[0,1,5,7,27,28,31,9,12,16,29,20,52,37,57,38,39,40,43,75,76,79,81,82]],["Austria",416,[24,2,3,7,8,27,9,12,16,29,18,20,37,55,39,58,59,42,60,43,83,77,67,73]],["Norway",405,[1,2,4,7,27,28,31,9,12,17,29,20,52,40,43,84,85,75,76,81,82,86,87,88]],["Portugal",401,[24,1,2,4,5,8,27,10,29,20,38,39,42,43,62,77,89,76,81,87,88,90,91,92]],["Israel",393,[24,0,1,4,7,8,9,11,13,16,29,20,93,45,46,32,48,94,95,36,51,96,97,98]],["Poland",383,[2,5,7,27,9,16,29,20,37,39,66,62,76,81,87,99,100,101,102,103,104,105,106,107]],["Estonia",332,[2,4,5,7,27,9,12,16,29,54,20,39,43,75,81,87,99,108,109,110,100,101,103,104]],["India",323,[0,4,17,18,19,20,111,32,48,36,112,113,114,115,68,116,117,118,70,119,120,121,122,123]],["Singapore",303,[4,7,17,18,54,20,124,125,36,126,127,128,129,114,115,130,117,71,131,62,132,133,134,135]],["Ireland",298,[2,27,9,16,29,20,38,43,67,72,81,136,87,88,90,137,138,103,139,104,107,140,141,142]],["Czech Republic",273,[2,7,27,9,12,16,29,20,39,84,78,81,100,101,102,103,143,104,144,145,146,147,148,149]],["Luxembourg",260,[24,9,29,20,37,39,59,67,79,81,150,151,88,152,138,103,107,153,154,141,155,156,157,158]],["Lithuania",257,[2,7,27,9,16,29,20,39,43,75,99,109,110,101,103,104,159,158,147,148,160,161,162,163]],["Latvia",250,[7,27,9,16,29,20,39,43,75,81,87,109,110,103,104,159,146,158,147,160,161,162,164,165]],["Australia",245,[0,8,16,17,18,20,44,125,36,126,128,166,167,130,168,169,170,171,70,71,172,173,63,72]],["Greece",233,[7,27,31,9,16,29,20,39,71,174,81,87,99,101,103,143,107,153,158,147,148,160,161,162]],["Mexico",230,[8,18,20,44,175,36,113,68,176,65,72,133,177,174,178,179,180,181,182,183,184,185,186,187]],["Hungary",227,[2,27,9,12,16,29,20,39,81,99,100,101,143,106,147,148,160,161,162,164,188,163,189,190]],["Romania",219,[9,29,20,39,87,99,104,148,160,161,162,191,163,190,192,193,194,195,196,197,198,199,200,201]],["Brazil",210,[4,8,18,20,44,113,37,68,170,117,176,202,72,133,177,174,178,179,203,143,183,153,204,186]],["UAE",209,[18,20,125,68,70,73,205,206,174,207,208,209,210,211,143,212,213,214,153,215,216,217,218,219]],["Croatia",204,[27,9,16,29,20,39,99,220,100,101,103,143,148,160,161,162,221,163,190,192,222,195,196,197]],["Ukraine",201,[9,29,18,20,39,63,101,143,155,148,149,161,162,163,223,224,225,222,194,195,196,197,198,199]],["Slovakia",192,[9,16,29,20,39,101,103,104,148,149,160,161,162,165,163,190,192,222,195,196,197,226,200,227]],["Slovenia",187,[9,29,20,39,220,101,103,148,160,161,162,165,163,190,192,195,197,226,227,201,228,229,230,231]],["Bulgaria",173,[27,9,16,29,20,39,101,215,148,160,161,162,163,232,190,192,233,195,196,197,198,199,200,201]],["Iceland",167,[2,27,9,29,20,39,234,110,235,138,107,236,160,189,190,237,238,239,195,197,240,241,226,242]],["Indonesia",165,[7,20,125,115,68,130,132,133,134,174,208,243,244,245,246,247,248,211,153,249,216,250,251,252]],["Colombia",159,[8,20,175,176,71,253,72,177,203,180,187,254,218,255,256,257,258,259,260,261,262,263,264,265]],["Argentina",148,[8,20,175,113,37,68,117,72,133,177,203,153,187,216,266,255,267,257,258,260,261,262,263,264]],["Turkey",146,[9,12,16,18,20,39,79,174,99,143,153,146,160,162,266,268,223,232,189,195,269,227,270,271]],["Vietnam",140,[17,18,20,125,127,115,130,133,134,243,244,245,246,248,153,272,249,273,252,274,233,275,276,277]],["Serbia",132,[29,20,39,143,148,160,161,162,163,192,195,196,197,201,278,279,280,281,282,283,284,285,286,287]],["Japan",130,[0,20,125,68,288,121,289,80,178,290,100,138,153,272,291,292,251,293,266,294,256,295,296,189]],["Chile",127,[8,20,175,180,183,187,216,254,255,257,258,260,262,263,264,297,298,299,230,300,301,302,303,304]],["Liechtenstein",123,[9,29,20,39,153,160,197,229,305,281,306,283,285,307,308,309,310,311,312,313,314,315,316,317]],["Cyprus",120,[20,39,133,103,160,190,233,195,197,226,201,228,229,318,319,281,320,321,311,322,323,324,313,317]],["China",117,[17,18,20,124,129,56,169,70,123,132,133,134,325,326,178,208,327,209,290,138,328,329,183,330]],["Hong Kong",115,[18,20,125,127,331,325,332,80,208,209,333,138,153,272,249,266,189,190,274,334,222,335,298,336]],["Malta",115,[29,20,39,101,160,223,189,190,222,238,195,197,198,228,229,281,337,306,285,307,309,321,322,324]],["Philippines",115,[18,20,125,115,134,206,243,244,245,246,248,153,252,275,277,338,339,340,298,341,342,343,344,345]],["Nigeria",113,[7,346,20,68,117,347,174,203,348,204,216,218,267,274,259,349,350,340,265,351,352,353,354,355]],["South Africa",113,[7,346,18,20,36,128,117,356,348,357,216,358,359,250,267,360,361,274,222,269,340,230,362,352]],["Malaysia",112,[4,20,125,115,130,62,133,134,243,246,248,153,249,216,274,338,269,339,298,341,363,343,364,345]],["Thailand",111,[7,18,20,125,115,134,243,246,248,153,249,365,274,334,277,339,265,298,341,343,345,366,367,355]],["Monaco",110,[29,20,39,89,160,267,189,274,222,197,226,229,281,306,285,304,368,307,320,369,317,370,371,372]],["New Zealand",106,[0,20,125,126,167,170,171,71,173,132,373,374,375,333,376,138,153,377,378,379,380,365,381,189]],["Kenya",105,[7,346,17,20,68,117,347,135,348,382,216,359,250,256,259,340,265,383,351,352,384,354,385,386]],["South Korea",105,[7,11,20,125,127,68,62,387,80,388,208,290,138,153,389,155,390,266,189,391,276,277,269,265]],["Saudi Arabia",104,[20,208,211,213,153,216,292,219,267,232,222,350,269,392,393,353,366,394,395,396,397,398,399,400]],["Egypt",102,[7,346,20,88,348,211,213,216,359,267,350,269,340,265,392,393,352,344,364,366,401,402,395,396]],["Montenegro",94,[29,20,39,148,196,197,201,229,353,280,306,282,285,307,322,403,317,404,405,406,407,371,408,409]],["Albania",93,[27,29,20,39,72,148,160,161,410,195,196,197,411,201,229,282,285,322,317,404,412,413,405,406]],["Peru",93,[8,20,175,113,187,216,255,258,260,263,265,297,298,299,230,301,302,303,414,397,415,416,417,418]],["Moldova",87,[29,20,101,161,162,195,196,197,229,285,321,317,404,412,405,406,371,408,372,409,419,420,421,422]],["Bosnia-H",86,[29,20,39,148,160,196,197,230,423,424,282,285,322,403,317,404,405,425,406,407,371,408,426,419]],["North Macedonia",80,[29,20,148,160,195,196,197,201,423,282,285,403,317,404,405,406,371,372,409,426,419,420,422,427]],["Georgia",78,[20,39,189,195,197,428,318,429,430,307,431,432,317,433,434,435,372,419,420,422,436,437,438,439]],["Andorra",71,[29,20,100,143,156,160,440,197,229,285,322,441,314,369,317,371,442,443,426,419,420,437,444,445]],["Taiwan",71,[20,125,127,253,80,153,272,389,218,446,412,447,417,448,449,450,451,452,453,454,455,456,457,458]],["Belarus",70,[27,29,20,39,160,161,197,231,459,321,460,404,412,405,425,448,407,461,371,435,462,419,422,427]],["Morocco",69,[7,346,20,348,213,189,269,463,392,352,353,281,364,396,464,400,465,466,418,467,449,450,468,469]],["Ghana",65,[7,346,20,68,117,347,470,340,351,352,385,386,471,472,465,473,474,475,476,477,478,450,468,479]],["Pakistan",63,[20,32,213,267,233,269,428,392,480,481,482,483,484,485,415,471,447,486,487,417,418,478,467,468]],["Russia",62,[29,20,488,489,257,233,490,429,280,321,315,317,412,447,407,461,476,372,409,491,492,451,493,494]],["San Marino",62,[29,20,160,197,306,314,317,371,372,419,420,422,436,437,445,495,496,497,498,499,500,501,502,503]],["Uruguay",60,[20,113,187,255,258,260,340,302,414,504,416,505,417,506,507,508,509,478,467,510,511,512,513,514]],["Armenia",58,[16,20,22,233,470,318,315,434,442,515,450,422,451,437,439,516,517,518,497,519,499,520,521,522]],["Qatar",58,[20,292,189,269,392,353,366,400,466,467,523,469,451,436,524,525,526,527,520,528,521,529,530,531]],["Costa Rica",55,[20,187,532,230,533,506,508,534,450,535,512,514,454,536,537,455,538,539,540,541,542,543,544,545]],["Bahrain",53,[18,20,68,207,213,269,392,366,396,466,461,467,523,469,451,524,546,525,521,529,530,503,547,548]],["Bangladesh",53,[20,213,252,269,428,549,484,550,551,415,471,486,552,448,478,535,468,553,554,517,555,556,520,557]],["Algeria",52,[346,20,37,348,256,269,558,396,400,465,467,468,469,479,559,524,457,458,560,561,562,545,529,503]],["Ecuador",52,[20,175,183,187,255,297,230,414,401,506,508,534,535,512,514,563,454,537,564,538,540,565,566,567]],["Kuwait",52,[20,189,269,366,396,399,400,568,467,523,450,469,451,524,454,520,521,529,530,531,503,547,548,569]],["Rwanda",52,[7,346,20,382,359,570,269,352,353,385,472,465,475,478,468,479,559,454,571,572,573,574,575,576]],["Tunisia",52,[7,346,20,348,213,195,269,392,352,353,400,466,468,469,479,524,454,571,577,458,561,562,545,573]],["Côte d'Ivoire",49,[7,346,20,348,226,352,353,385,386,472,465,478,450,451,479,578,571,577,458,572,562,579,574,576]],["Jordan",47,[20,213,216,269,392,402,395,396,400,478,467,523,469,524,454,521,529,530,503,547,580,569,581,582]],["Uganda",47,[7,346,20,382,259,340,352,385,418,477,478,450,468,479,559,571,583,584,574,575,585,586,581,587]],["Senegal",46,[7,346,20,352,353,385,471,472,418,478,450,468,479,454,571,577,572,561,562,503,574,575,576,586]],["Oman",45,[20,350,269,366,396,399,466,568,467,523,469,451,524,529,531,503,547,548,588,581,582,589,590,591]],["Tanzania",45,[346,20,117,382,269,352,385,418,478,467,450,468,479,454,571,592,562,503,574,585,586,581,587,582]],["Lebanon",44,[20,269,366,549,304,396,467,523,593,469,451,524,454,458,545,529,530,503,548,580,581,582,589,590]],["Ethiopia",43,[7,346,20,359,352,353,385,472,477,478,450,468,479,559,571,579,576,594,586,581,587,582,589,590]],["Holy See",41,[29,20,317,371,420,437,516,495,595,499,500,501,596,597,598,581,582,589,590,591,599,600,601,602]],["Panama",41,[20,258,302,416,505,506,508,534,450,514,454,536,537,538,540,542,543,503,596,603,581,587,582,589]],["Bolivia",40,[20,187,230,416,412,506,508,535,512,514,537,538,540,541,566,543,562,503,596,580,604,581,587,582]],["Cambodia",40,[20,246,248,153,277,298,367,482,483,417,605,492,554,555,520,545,521,575,594,581,582,589,590,591]],["Paraguay",40,[20,258,260,302,414,506,507,508,512,514,537,538,539,541,543,544,562,545,503,596,581,587,582,589]],["El Salvador",39,[20,187,230,506,508,534,512,514,606,536,537,538,456,542,521,503,596,603,569,594,581,587,582,589]],["Kazakhstan",39,[20,246,428,430,607,431,447,593,492,451,516,608,609,610,522,611,502,612,569,581,582,589,590,591]],["Venezuela",39,[20,72,230,302,414,506,450,535,512,514,606,538,541,543,545,521,596,580,581,587,582,589,590,591]],["Dominican Republic",38,[20,187,255,613,508,534,450,512,514,537,538,540,457,566,545,596,580,594,614,581,587,582,589,590]],["Zambia",38,[346,20,359,352,353,615,472,473,616,450,479,454,503,576,585,586,581,587,582,589,590,591,617,599]],["Azerbaijan",37,[20,428,430,431,447,593,516,608,526,609,520,521,522,502,580,575,594,581,582,589,590,591,599,600]],["Cameroon",36,[7,20,352,353,385,468,479,577,618,572,562,575,576,594,586,581,587,582,589,590,591,617,599,600]],["Sri Lanka",36,[20,486,619,450,553,517,556,575,620,586,581,582,589,590,591,617,599,600,601,602,621,622,623,624]],["Uzbekistan",36,[20,246,428,430,431,593,516,608,526,560,609,520,610,521,522,503,581,582,589,590,591,617,599,600]],["Guatemala",35,[20,506,508,534,512,514,606,536,537,538,540,542,543,503,596,594,581,587,582,589,590,591,617,599]],["Angola",34,[7,20,117,468,451,479,571,562,528,625,576,594,581,587,582,589,590,591,617,599,600,601,602,621]],["Botswana",34,[7,346,20,358,269,615,450,479,525,562,576,594,581,587,582,589,590,591,617,599,600,601,602,621]],["Mauritius",34,[7,346,20,222,478,450,479,573,503,576,586,581,587,582,589,590,591,617,599,600,601,602,621,622]],["Central African Republic",33,[346,20,222,626,353,479,457,562,528,579,594,586,581,587,582,589,590,591,617,599,600,601,602,621]],["Mali",33,[7,346,20,352,353,385,450,479,575,576,586,581,587,582,589,590,591,617,599,600,601,602,621,622]],["DRC Congo",32,[346,20,352,385,479,562,528,576,594,586,581,587,582,589,590,591,617,599,600,601,602,621,622,623]],["Palestine",32,[20,269,467,469,524,627,548,581,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630]],["Bahamas",31,[20,274,613,450,451,455,457,521,596,548,594,581,587,582,589,590,591,617,599,600,601,602,621,622]],["Malawi",31,[7,346,20,352,450,479,454,503,575,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624]],["Namibia",31,[20,358,615,616,450,479,571,576,586,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624]],["Zimbabwe",31,[20,352,353,479,457,572,503,576,586,581,587,582,589,590,591,617,599,600,601,602,621,623,624,628]],["Belize",30,[20,613,281,450,514,606,536,538,457,596,594,581,587,582,589,590,591,617,599,600,601,602,621,622]],["Laos",30,[20,246,248,367,605,449,492,555,503,569,575,581,582,589,590,591,617,599,600,601,602,621,622,623]],["Benin",29,[7,346,20,385,479,546,576,594,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628]],["Burkina Faso",29,[7,346,20,352,385,479,576,594,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628]],["Burundi",29,[346,20,382,352,479,585,594,586,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628]],["Gabon",29,[346,20,450,479,631,576,594,586,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628]],["Honduras",29,[20,534,514,606,536,538,540,542,596,614,581,587,582,589,590,591,617,599,600,601,602,621,622,623]],["Seychelles",29,[346,20,619,479,632,521,503,586,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628]],["Sierra Leone",29,[346,20,570,352,450,479,503,586,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628]],["Togo",29,[346,20,352,353,385,468,479,576,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628]],["Trinidad and Tobago",29,[20,613,457,503,596,548,633,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629]],["Cabo Verde",28,[346,20,324,479,520,521,594,586,581,587,582,589,590,591,599,600,601,602,621,622,623,624,628,629]],["Cuba",28,[20,613,450,514,543,502,596,594,581,587,582,589,590,591,617,599,600,601,602,621,623,624,628,629]],["Gambia",28,[346,20,465,479,634,594,586,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629]],["Kyrgyzstan",28,[20,246,431,593,451,516,502,503,581,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629]],["Madagascar",28,[7,346,20,352,353,479,521,586,581,587,582,589,590,591,599,600,601,602,621,622,623,624,628,629]],["Myanmar",28,[20,246,248,635,605,449,554,555,575,581,582,589,590,591,617,599,600,601,602,621,623,624,628,629]],["Nepal",28,[20,636,637,553,454,503,575,581,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630]],["Niger",28,[7,346,20,353,479,560,638,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629]],["Tajikistan",28,[20,246,516,608,520,610,503,581,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630]],["Congo (Congo-Brazzaville)",27,[346,20,352,385,562,594,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630]],["Equatorial Guinea",27,[346,20,450,479,594,586,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630]],["Iraq",27,[20,340,467,524,529,580,581,582,589,590,591,617,599,600,601,602,621,623,624,628,629,630,639,640]],["Jamaica",27,[20,613,450,596,594,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Mozambique",27,[20,615,479,454,503,586,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630]],["Nicaragua",27,[20,512,514,536,537,538,542,596,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628]],["Barbados",26,[20,613,450,457,596,548,594,581,587,582,589,590,591,599,600,601,602,621,622,623,624,628,629,630]],["Eritrea",26,[346,20,450,521,594,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Liberia",26,[346,20,352,479,592,620,581,587,582,589,590,591,617,599,600,601,602,621,623,624,628,629,630,639]],["Maldives",26,[20,222,450,521,575,581,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Chad",25,[346,20,479,594,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Djibouti",25,[346,20,269,479,594,581,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Guinea",25,[346,20,479,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Lesotho",25,[346,20,615,479,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Mauritania",25,[7,346,20,359,269,479,581,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Antigua and Barbuda",24,[20,613,450,596,594,581,587,582,589,590,591,599,600,601,602,621,622,623,624,628,629,630,639]],["Comoros",24,[20,479,594,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Dominica",24,[20,613,538,596,594,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Guyana",24,[20,613,514,596,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Saint Lucia",24,[20,613,450,503,596,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Turkmenistan",24,[20,246,516,526,609,581,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,640]],["Afghanistan",23,[20,641,324,457,594,581,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630]],["Fiji",23,[20,562,557,594,581,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Grenada",23,[20,613,596,594,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Guinea-Bissau",23,[20,479,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Haiti",23,[20,613,514,596,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Libya",23,[346,20,269,467,469,581,582,589,590,591,599,600,601,602,621,623,624,628,629,630,639]],["Mongolia",23,[20,575,620,581,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Saint Kitts and Nevis",23,[20,613,450,503,596,581,587,582,589,590,591,599,600,601,602,621,622,623,624,628,629,630,639]],["Saint Vincent and the Grenadines",23,[20,613,503,596,581,587,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Somalia",23,[20,353,450,581,587,582,589,590,591,617,599,600,601,602,621,623,624,628,629,630,639]],["Sudan",23,[346,20,467,469,479,581,582,589,590,591,617,599,600,601,602,621,623,624,628,629,630]],["Syria",23,[20,467,469,451,581,582,589,590,591,617,599,600,601,602,621,623,624,628,629,630]],["Bhutan",22,[20,594,581,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Brunei",22,[20,246,248,605,520,620,594,642,581,582,589,590,591,599,600,601,602,622,623,628,630,639]],["Iran",22,[20,643,451,586,581,582,589,590,591,599,600,601,602,621,623,624,628,629,630,640]],["Sao Tome and Principe",22,[20,479,581,587,582,589,590,591,599,600,601,602,621,622,623,624,628,629,630,639]],["Samoa",21,[20,450,503,581,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Suriname",21,[20,613,514,596,581,587,582,589,590,591,599,600,601,602,621,623,624,628,629,630,639]],["Eswatini (fmr. \"Swaziland\")",20,[346,20,265,615,479,594,581,582,589,590,591,617,599,600,601,602,623,628,630,639]],["Papua New Guinea",20,[20,450,581,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Solomon Islands",20,[20,450,581,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Timor-Leste",20,[20,605,581,582,589,590,591,617,599,600,601,602,621,623,624,628,629,630,639]],["Tonga",20,[20,353,581,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Yemen",20,[20,353,581,582,589,590,617,599,600,601,602,621,622,623,624,628,629,630]],["Kiribati",19,[20,581,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Marshall Islands",19,[20,581,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630,639]],["Micronesia",19,[20,450,581,582,589,590,591,599,600,601,602,621,622,623,624,628,629,630,639]],["Vanuatu",19,[20,503,581,582,589,590,591,617,599,600,601,602,621,622,623,624,628,629,630]],["Palau",18,[20,581,582,589,590,591,599,600,601,602,621,622,623,624,628,629,630,639]],["Tuvalu",18,[20,581,582,589,590,591,599,600,601,602,621,622,623,624,628,629,630,639]],["South Sudan",17,[346,20,479,581,582,589,590,591,617,599,600,601,602,622,623,628,630]],["Nauru",15,[20,581,582,589,590,591,599,600,601,602,622,623,628,630,639]],["Gibraltar",14,[229,644,437,645,646,617,623,640]],["North Korea",11,[20,647,581,582,590,600,601,602,623,628,630]],["Cayman Islands",1,[62]]]}</script>
+
+<script>
+(() => {
+  const D = JSON.parse(document.getElementById("data").textContent);
+  const $ = (s) => document.querySelector(s);
+  const fmt = (n) => n.toLocaleString("en-US");
+  const norm = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+  /* ---------- logo mark + favicon ---------- */
+  const ART = [
+    ".........###...#.",
+    "........#...#.##.",
+    "####....#..##..#.",
+    "#...#...#.#.#..#.",
+    "#...#...##..#..#.",
+    "####..#..###..###",
+    "#................",
+    "#................"
+  ];
+  ART.forEach((row, r) => [...row].forEach((ch, c) => {
+    if (ch !== "#") return;
+    const i = document.createElement("i");
+    i.style.gridColumn = c + 1;
+    i.style.gridRow = r + 1;
+    $("#mark").appendChild(i);
+  }));
+  (function () {
+    let rects = "";
+    ART.slice(2).forEach((row, y) => [...row.slice(0, 5)].forEach((ch, x) => {
+      if (ch === "#") rects += `<rect x="${x + 2.5}" y="${y + 2}" width="1" height="1"/>`;
+    }));
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" shape-rendering="crispEdges"><rect width="10" height="10" rx="1.5" fill="#14222B"/><g fill="#00ff41">${rects}</g></svg>`;
+    $("#favicon").href = "data:image/svg+xml," + encodeURIComponent(svg);
+  })();
+
+  /* ---------- pixel numerals (same 5x6 grid as the logo) ---------- */
+  const GLYPH = {
+    "0": [".###.", "#...#", "#..##", "#.#.#", "##..#", ".###."],
+    "1": [".#.", "##.", ".#.", ".#.", ".#.", "###"],
+    "2": [".###.", "#...#", "....#", "..##.", ".#...", "#####"],
+    "3": ["####.", "....#", "..##.", "....#", "#...#", ".###."],
+    "4": ["...#.", "..##.", ".#.#.", "#..#.", "#####", "...#."],
+    "5": ["#####", "#....", "####.", "....#", "#...#", ".###."],
+    "6": [".###.", "#....", "####.", "#...#", "#...#", ".###."],
+    "7": ["#####", "....#", "...#.", "..#..", ".#...", ".#..."],
+    "8": [".###.", "#...#", ".###.", "#...#", "#...#", ".###."],
+    "9": [".###.", "#...#", "#...#", ".####", "....#", ".###."],
+    ",": ["..", "..", "..", "..", ".#", "#."]
+  };
+  function pixelNumber(el, text) {
+    const G = 0.14, S = 1 + G;
+    let x = 0, rects = "";
+    [...text].forEach((ch, k) => {
+      const g = GLYPH[ch];
+      if (!g) return;
+      g.forEach((row, y) => [...row].forEach((c, dx) => {
+        if (c === "#") rects += `<rect x="${((x + dx) * S).toFixed(2)}" y="${(y * S).toFixed(2)}" width="1" height="1" style="--d:${(Math.random() * 0.9).toFixed(2)}s"/>`;
+      }));
+      x += g[0].length + 1;
+    });
+    const w = (x - 1) * S - G, h = 6 * S - G;
+    el.setAttribute("aria-label", text);
+    el.innerHTML = `<svg viewBox="0 0 ${w.toFixed(2)} ${h.toFixed(2)}" style="aspect-ratio:${w.toFixed(2)}/${h.toFixed(2)}" shape-rendering="crispEdges" aria-hidden="true">${rects}</svg>`;
+  }
+  pixelNumber($("#n-total"), fmt(D.total));
+  pixelNumber($("#n-countries"), fmt(D.countryCount));
+
+  /* ---------- featured names ---------- */
+  const namesEl = $("#names");
+  const FEAT = 20;
+  D.featured.slice(0, FEAT).forEach((i) => {
+    const s = document.createElement("span");
+    s.textContent = D.names[i];
+    namesEl.appendChild(s);
+  });
+  const rest = document.createElement("span");
+  rest.className = "rest";
+  rest.textContent = `+ ${fmt(D.total - Math.min(FEAT, D.featured.length))} more`;
+  namesEl.appendChild(rest);
+
+  /* ---------- country tiles ---------- */
+  const TOP = 24, BARS = 8;
+  const tilesEl = $("#tiles"), toggleEl = $("#toggle"), noneEl = $("#none"), cq = $("#cq");
+  const maxC = D.countries[0][1];
+  let expanded = false;
+
+  D.countries.forEach(([name, count], idx) => {
+    const lit = Math.max(1, Math.round(BARS * Math.log(count) / Math.log(maxC)));
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "tile" + (idx >= TOP ? " extra" : "");
+    b.dataset.i = idx;
+    b.dataset.n = norm(name);
+    b.innerHTML =
+      `<span class="cn"></span>` +
+      `<span class="foot"><span class="bar" aria-hidden="true">${Array.from({ length: BARS }, (_, k) => `<i${k < lit ? ' class="on"' : ""}></i>`).join("")}</span><b>${fmt(count)}</b></span>`;
+    b.querySelector(".cn").textContent = name;
+    b.setAttribute("aria-label", `${name}, ${fmt(count)} investors`);
+    tilesEl.appendChild(b);
+  });
+
+  function syncTiles() {
+    const q = norm(cq.value).trim();
+    let visible = 0;
+    tilesEl.querySelectorAll(".tile").forEach((t) => {
+      const ok = !q || t.dataset.n.includes(q);
+      t.hidden = !ok;
+      if (ok) visible++;
+    });
+    tilesEl.classList.toggle("all", expanded || !!q);
+    toggleEl.hidden = !!q;
+    noneEl.hidden = visible > 0;
+    toggleEl.textContent = expanded ? "show fewer" : `show all ${D.countries.length} countries`;
+  }
+  toggleEl.addEventListener("click", () => { expanded = !expanded; syncTiles(); });
+  cq.addEventListener("input", syncTiles);
+  syncTiles();
+
+  /* ---------- dialog ---------- */
+  const dlg = $("#dlg");
+  tilesEl.addEventListener("click", (e) => {
+    const t = e.target.closest(".tile");
+    if (!t) return;
+    const [name, count, ids] = D.countries[+t.dataset.i];
+    $("#dlg-title").textContent = name;
+    $("#dlg-sub").textContent = `${fmt(count)} investors`;
+    const ul = $("#dlg-list");
+    ul.innerHTML = "";
+    ids.forEach((i) => {
+      const li = document.createElement("li");
+      li.textContent = D.names[i];
+      ul.appendChild(li);
+    });
+    const left = count - ids.length;
+    const more = $("#dlg-more");
+    more.hidden = left <= 0;
+    more.innerHTML = left > 0 ? `<b>+ ${fmt(left)} more.</b> Visible to founders inside p01.` : "";
+    dlg.showModal();
+    dlg.focus();
+    dlg.querySelector(".dbox").scrollTop = 0;
+  });
+  $("#dlg-x").addEventListener("click", () => dlg.close());
+  dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+})();
+</script>
+</body>
+</html>
