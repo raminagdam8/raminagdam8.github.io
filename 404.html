@@ -1,0 +1,40 @@
+---
+permalink: /404.html
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 2 saniye sonra p01.vc adresine yönlendirir -->
+    <meta http-equiv="refresh" content="2;url=https://p01.vc">
+    <title>404 Not Found</title>
+    <style>
+        body {
+            background-color: #14222B;
+            color: #ffffff;
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+    </style>
+</head>
+<body>
+    <h1>404 Not Found</h1>
+
+    <script>
+        // HTML meta-refresh yedeklemesi (tarayıcı desteği garantisi için)
+        setTimeout(function() {
+            window.location.href = "https://p01.vc";
+        }, 2000);
+    </script>
+</body>
+</html>
